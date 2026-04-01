@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Femme Fatale Fest Task Manager</title>
+    <style>
+        :root {
+            --bg: #120312;
+            --bg2: #050108;
+            --panel: #1a0620;
+            --panel2: #120419;
+            --line: #4a1248;
+            --text: #f7f4fb;
+            --muted: #d6b9de;
+            --accent: #25e6cf;
+            --accent2: #10bfa9;
+            --danger: #ff4fa3;
+            --hotpink: #d10aa3;
+            --cyan-glow: rgba(37, 230, 207, 0.38);
+            --pink-glow: rgba(209, 10, 163, 0.34);
+            --shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+            --radius: 18px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(209, 10, 163, 0.18), transparent 28%),
+                radial-gradient(circle at top right, rgba(37, 230, 207, 0.12), transparent 26%),
+                linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+            color: var(--text);
+        }
+
+        .container {
+            width: min(1200px, calc(100% - 24px));
+            margin: 24px auto 56px;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .card {
+            background: linear-gradient(180deg, rgba(26, 6, 32, 0.96), rgba(10, 3, 16, 0.96));
+            border: 1px solid rgba(209, 10, 163, 0.24);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow), 0 0 0 1px rgba(37, 230, 207, 0.06) inset;
+            padding: 18px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(37, 230, 207, 0.06), transparent 35%, rgba(209, 10, 163, 0.08));
+            pointer-events: none;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin-top: 0;
+        }
+
+        h1 {
+            font-family: Impact, Haettenschweiler, "Arial Black", sans-serif;
+            font-size: clamp(2.4rem, 4vw, 4.2rem);
+            margin-bottom: 10px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--accent);
+            text-shadow: 0 0 18px var(--cyan-glow), 3px 3px 0 rgba(209, 10, 163, 0.7);
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--accent);
+        }
+
+        h3 {
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        .tiny {
+            font-size: 0.86rem;
+            color: var(--muted);
+        }
+
+        .top-actions,
+        .filters,
+        .stats,
+        .form-grid,
+        .task-meta,
+        .task-actions,
+        .inline {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .stats {
+            margin-top: 14px;
+        }
+
+        .stat {
+            flex: 1 1 120px;
+            background: linear-gradient(180deg, rgba(20, 7, 27, 0.95), rgba(10, 4, 16, 0.95));
+            border: 1px solid rgba(37, 230, 207, 0.18);
+            border-radius: 14px;
+            padding: 12px;
+            box-shadow: 0 0 18px rgba(37, 230, 207, 0.08);
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 1.6rem;
+            margin-top: 4px;
+        }
+
+        input,
+        select,
+        textarea,
+        button {
+            font: inherit;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            background: rgba(7, 2, 12, 0.92);
+            color: var(--text);
+            border: 1px solid rgba(209, 10, 163, 0.3);
+            border-radius: 12px;
+            padding: 12px 14px;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(37, 230, 207, 0.16), 0 0 22px rgba(37, 230, 207, 0.12);
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        button {
+            border: none;
+            border-radius: 12px;
+            padding: 11px 16px;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+        }
+
+        .primary {
+            background: var(--accent);
+            color: #04130b;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            box-shadow: 0 0 18px rgba(37, 230, 207, 0.24);
+        }
+
+        .primary:hover {
+            background: var(--accent2);
+        }
+
+        .secondary {
+            background: var(--hotpink);
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            box-shadow: 0 0 18px rgba(209, 10, 163, 0.2);
+        }
+
+        .ghost {
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid rgba(37, 230, 207, 0.22);
+        }
+
+        .danger {
+            background: rgba(255, 79, 163, 0.14);
+            color: #ffd2e8;
+            border: 1px solid rgba(255, 79, 163, 0.34);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 18px;
+            align-items: start;
+        }
+
+        .form-grid {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .column {
+            background: linear-gradient(180deg, rgba(14, 4, 22, 0.9), rgba(8, 2, 12, 0.9));
+            border: 1px solid rgba(209, 10, 163, 0.22);
+            border-radius: 18px;
+            padding: 14px;
+            min-height: 260px;
+            box-shadow: inset 0 0 0 1px rgba(37, 230, 207, 0.04);
+        }
+
+        .column-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 28px;
+            height: 28px;
+            padding: 0 10px;
+            border-radius: 999px;
+            background: rgba(37, 230, 207, 0.14);
+            color: var(--accent);
+            border: 1px solid rgba(37, 230, 207, 0.24);
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .task-card {
+            background: linear-gradient(180deg, rgba(38, 8, 40, 0.98), rgba(18, 4, 25, 0.98));
+            border: 1px solid rgba(209, 10, 163, 0.18);
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 12px;
+            box-shadow: 0 0 20px rgba(209, 10, 163, 0.08);
+        }
+
+        .task-card h3 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        .task-meta {
+            font-size: 0.88rem;
+            color: var(--muted);
+            margin: 8px 0 10px;
+        }
+
+        .pill {
+            display: inline-flex;
+            border-radius: 999px;
+            padding: 5px 10px;
+            font-size: 0.78rem;
+            border: 1px solid rgba(37, 230, 207, 0.18);
+            background: rgba(8, 2, 14, 0.92);
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .priority-high {
+            color: #ffd2e8;
+            border-color: rgba(255, 79, 163, 0.42);
+        }
+
+        .priority-medium {
+            color: #9ffcf2;
+            border-color: rgba(37, 230, 207, 0.42);
+        }
+
+        .priority-low {
+            color: #d9ccff;
+            border-color: rgba(182, 127, 255, 0.34);
+        }
+
+        .task-actions {
+            justify-content: space-between;
+            margin-top: 12px;
+        }
+
+        .comments-section {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(37, 230, 207, 0.12);
+        }
+
+        .comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 10px 0 12px;
+        }
+
+        .comment-item {
+            background: rgba(8, 2, 14, 0.88);
+            border: 1px solid rgba(209, 10, 163, 0.14);
+            border-radius: 12px;
+            padding: 10px 12px;
+        }
+
+        .comment-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 0.78rem;
+            color: var(--muted);
+        }
+
+        .comment-text {
+            margin: 0;
+            font-size: 0.92rem;
+            line-height: 1.4;
+        }
+
+        .comment-form {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .comment-form textarea {
+            min-height: 70px;
+        }
+
+        .comment-empty {
+            color: var(--muted);
+            font-size: 0.88rem;
+            margin: 10px 0 12px;
+        }
+
+        .task-actions .inline {
+            gap: 8px;
+        }
+
+        .notice {
+            margin-top: 14px;
+            padding: 12px 14px;
+            background: rgba(37, 230, 207, 0.1);
+            border: 1px solid rgba(37, 230, 207, 0.2);
+            border-radius: 12px;
+            color: #d6fffa;
+            font-size: 0.92rem;
+        }
+
+        .warning {
+            background: rgba(209, 10, 163, 0.12);
+            border-color: rgba(209, 10, 163, 0.22);
+            color: #ffd0f4;
+        }
+
+        .empty {
+            color: var(--muted);
+            font-size: 0.92rem;
+            border: 1px dashed rgba(148, 163, 184, 0.2);
+            border-radius: 14px;
+            padding: 16px;
+        }
+
+        .footer-note {
+            margin-top: 18px;
+            font-size: 0.88rem;
+            color: var(--muted);
+        }
+
+        @media (max-width: 980px) {
+
+            .hero,
+            .grid,
+            .board,
+            .row-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <section class="hero">
+            <div class="card">
+                <p class="tiny">Femme Fatale Fest production board</p>
+                <h1>Femme Fatale Fest</h1>
+                <p class="muted">A neon-noir task board for assigning jobs, tracking progress, and keeping the fundraiser loud, organized, and on schedule.</p>
+                <div class="stats" id="stats"></div>
+            </div>
+            <div class="card">
+                <h2>Festival mode</h2>
+                <p class="muted">This version runs in demo mode using your browser's local storage, so you can test the look and flow locally before wiring up Firebase for the full shared crew board.</p>
+                <div class="notice warning">In demo mode, tasks only save on the current browser and device.</div>
+            </div>
+        </section>
+
+        <section class="grid">
+            <aside class="card">
+                <h2>Create or edit task</h2>
+                <form id="taskForm" class="form-grid">
+                    <input type="hidden" id="taskId" />
+                    <label>
+                        <div class="tiny">Task title</div>
+                        <input id="title" required placeholder="Example: Call sponsors for raffle donations" />
+                    </label>
+                    <label>
+                        <div class="tiny">Description</div>
+                        <textarea id="description" placeholder="Add notes, contact info, or details here"></textarea>
+                    </label>
+                    <div class="row-2">
+                        <label>
+                            <div class="tiny">Assigned to</div>
+                            <select id="assignedTo"></select>
+                        </label>
+                        <label>
+                            <div class="tiny">Priority</div>
+                            <select id="priority">
+                                <option value="high">High</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="low">Low</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="row-2">
+                        <label>
+                            <div class="tiny">Due date</div>
+                            <input id="dueDate" type="date" />
+                        </label>
+                        <label>
+                            <div class="tiny">Status</div>
+                            <select id="status">
+                                <option value="todo">To do</option>
+                                <option value="doing">In progress</option>
+                                <option value="done">Done</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="inline">
+                        <button class="primary" type="submit">Save task</button>
+                        <button class="secondary" type="button" id="resetBtn">Clear form</button>
+                    </div>
+                </form>
+
+                <hr style="border-color: rgba(148,163,184,0.15); margin: 18px 0;" />
+
+                <h2>People</h2>
+                <div class="inline">
+                    <input id="newMemberName" placeholder="Add a person" />
+                    <button class="secondary" id="addMemberBtn" type="button">Add</button>
+                </div>
+                <div id="memberList" class="footer-note"></div>
+            </aside>
+
+            <main>
+                <div class="card" style="margin-bottom: 18px;">
+                    <div class="filters">
+                        <div style="flex: 1 1 220px;">
+                            <div class="tiny">Search</div>
+                            <input id="searchInput" placeholder="Search tasks" />
+                        </div>
+                        <div style="flex: 1 1 180px;">
+                            <div class="tiny">Filter by person</div>
+                            <select id="filterAssignee"></select>
+                        </div>
+                        <div style="flex: 1 1 160px;">
+                            <div class="tiny">Filter by priority</div>
+                            <select id="filterPriority">
+                                <option value="all">All priorities</option>
+                                <option value="high">High</option>
+                                <option value="medium">Medium</option>
+                                <option value="low">Low</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <section class="board" id="board"></section>
+            </main>
+        </section>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+        import {
+            getFirestore,
+            collection,
+            addDoc,
+            updateDoc,
+            deleteDoc,
+            doc,
+            onSnapshot,
+            setDoc,
+            getDoc,
+            query,
+            orderBy,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+        const USE_FIREBASE = true;
+
+        const FIREBASE_CONFIG = {
+            apiKey: "AIzaSyAcG1Cybu00aHwE2_4OG-SFvFPJpoZyNUw",
+            authDomain: "femme-fatale-fest.firebaseapp.com",
+            projectId: "femme-fatale-fest",
+            storageBucket: "femme-fatale-fest.firebasestorage.app",
+            messagingSenderId: "875641313971",
+            appId: "1:875641313971:web:93bec4338de2e29232eec6"
+        };
+
+        const DEFAULT_MEMBERS = ["Me", "Bass Player", "Volunteer 1", "Volunteer 2"];
+
+        const DEFAULT_TASKS = [
+            {
+                id: crypto.randomUUID(),
+                title: "Ask local businesses for raffle prizes",
+                description: "Call 10 local businesses and track responses.",
+                comments: [
+                    { author: "Bass Player", text: "I have a list of 6 businesses to start with.", createdAt: Date.now() - 500000 }
+                ],
+                assignedTo: "Bass Player",
+                priority: "high",
+                dueDate: "",
+                status: "todo",
+                createdAt: Date.now()
+            },
+            {
+                id: crypto.randomUUID(),
+                title: "Design social media flyer",
+                description: "Make a square version and a story version.",
+                comments: [
+                    { author: "Me", text: "Drafting the square flyer first tonight.", createdAt: Date.now() - 300000 }
+                ],
+                assignedTo: "Me",
+                priority: "medium",
+                dueDate: "",
+                status: "doing",
+                createdAt: Date.now() + 1
+            },
+            {
+                id: crypto.randomUUID(),
+                title: "Confirm venue donation jar placement",
+                description: "Check front table, merch table, and entrance.",
+                comments: [],
+                assignedTo: "Volunteer 1",
+                priority: "low",
+                dueDate: "",
+                status: "done",
+                createdAt: Date.now() + 2
+            }
+        ];
+
+        const el = {
+            stats: document.getElementById("stats"),
+            board: document.getElementById("board"),
+            taskForm: document.getElementById("taskForm"),
+            taskId: document.getElementById("taskId"),
+            title: document.getElementById("title"),
+            description: document.getElementById("description"),
+            assignedTo: document.getElementById("assignedTo"),
+            priority: document.getElementById("priority"),
+            dueDate: document.getElementById("dueDate"),
+            status: document.getElementById("status"),
+            resetBtn: document.getElementById("resetBtn"),
+            searchInput: document.getElementById("searchInput"),
+            filterAssignee: document.getElementById("filterAssignee"),
+            filterPriority: document.getElementById("filterPriority"),
+            newMemberName: document.getElementById("newMemberName"),
+            addMemberBtn: document.getElementById("addMemberBtn"),
+            memberList: document.getElementById("memberList")
+        };
+
+        let db = null;
+        let tasks = [];
+        let members = [];
+
+        const statuses = [
+            { key: "todo", label: "To do" },
+            { key: "doing", label: "In progress" },
+            { key: "done", label: "Done" }
+        ];
+
+        function saveLocal() {
+            localStorage.setItem("fundraiser_task_manager_tasks", JSON.stringify(tasks));
+            localStorage.setItem("fundraiser_task_manager_members", JSON.stringify(members));
+        }
+
+        function loadLocal() {
+            const savedTasks = JSON.parse(localStorage.getItem("fundraiser_task_manager_tasks") || "null");
+            const savedMembers = JSON.parse(localStorage.getItem("fundraiser_task_manager_members") || "null");
+            tasks = Array.isArray(savedTasks) && savedTasks.length ? savedTasks : DEFAULT_TASKS;
+            tasks = tasks.map(task => ({
+                ...task,
+                comments: Array.isArray(task.comments) ? task.comments : []
+            }));
+            members = Array.isArray(savedMembers) && savedMembers.length ? savedMembers : DEFAULT_MEMBERS;
+            saveLocal();
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#039;");
+        }
+
+        function capitalize(value) {
+            return value.charAt(0).toUpperCase() + value.slice(1);
+        }
+
+        function labelForStatus(status) {
+            return status === "todo" ? "To do" : status === "doing" ? "In progress" : "Done";
+        }
+
+        function formatCommentDate(timestamp) {
+            if (!timestamp) return "Just now";
+            return new Date(timestamp).toLocaleString();
+        }
+
+        function renderMemberOptions() {
+            el.assignedTo.innerHTML = members
+                .map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`)
+                .join("");
+
+            el.filterAssignee.innerHTML = '<option value="all">Everyone</option>' + members
+                .map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`)
+                .join("");
+
+            el.memberList.innerHTML = members
+                .map(name => `<span class="pill">${escapeHtml(name)}</span>`)
+                .join(" ");
+        }
+
+        function renderStats() {
+            const total = tasks.length;
+            const todo = tasks.filter(t => t.status === "todo").length;
+            const doing = tasks.filter(t => t.status === "doing").length;
+            const done = tasks.filter(t => t.status === "done").length;
+
+            el.stats.innerHTML = `
+        <div class="stat"><span class="tiny">Total tasks</span><strong>${total}</strong></div>
+        <div class="stat"><span class="tiny">To do</span><strong>${todo}</strong></div>
+        <div class="stat"><span class="tiny">In progress</span><strong>${doing}</strong></div>
+        <div class="stat"><span class="tiny">Done</span><strong>${done}</strong></div>
+      `;
+        }
+
+        function getFilteredTasks() {
+            const search = el.searchInput.value.trim().toLowerCase();
+            const assignee = el.filterAssignee.value;
+            const priority = el.filterPriority.value;
+
+            return [...tasks]
+                .filter(task => {
+                    const matchesSearch = !search ||
+                        task.title.toLowerCase().includes(search) ||
+                        task.description.toLowerCase().includes(search) ||
+                        task.assignedTo.toLowerCase().includes(search);
+                    const matchesAssignee = assignee === "all" || task.assignedTo === assignee;
+                    const matchesPriority = priority === "all" || task.priority === priority;
+                    return matchesSearch && matchesAssignee && matchesPriority;
+                })
+                .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+        }
+
+        function renderTaskCard(task) {
+            const due = task.dueDate
+                ? new Date(task.dueDate + "T12:00:00").toLocaleDateString()
+                : "No due date";
+
+            const commentsHtml = task.comments.length
+                ? `<div class="comments-list">${task.comments.map(comment => `
+            <div class="comment-item">
+              <div class="comment-head">
+                <strong>${escapeHtml(comment.author)}</strong>
+                <span>${formatCommentDate(comment.createdAt)}</span>
+              </div>
+              <p class="comment-text">${escapeHtml(comment.text)}</p>
+            </div>
+          `).join("")}</div>`
+                : '<div class="comment-empty">No comments yet.</div>';
+
+            return `
+        <article class="task-card" data-id="${task.id}">
+          <h3>${escapeHtml(task.title)}</h3>
+          <p class="muted">${escapeHtml(task.description || "No description")}</p>
+          <div class="task-meta">
+            <span>Assigned to: <strong>${escapeHtml(task.assignedTo)}</strong></span>
+            <span>Due: <strong>${escapeHtml(due)}</strong></span>
+          </div>
+          <div class="inline">
+            <span class="pill priority-${task.priority}">${capitalize(task.priority)} priority</span>
+            <span class="pill">${labelForStatus(task.status)}</span>
+          </div>
+          <div class="task-actions">
+            <div class="inline">
+              <button class="ghost edit-task" type="button">Edit</button>
+              <button class="danger delete-task" type="button">Delete</button>
+            </div>
+            <select class="status-select">
+              <option value="todo" ${task.status === "todo" ? "selected" : ""}>To do</option>
+              <option value="doing" ${task.status === "doing" ? "selected" : ""}>In progress</option>
+              <option value="done" ${task.status === "done" ? "selected" : ""}>Done</option>
+            </select>
+          </div>
+
+          <div class="comments-section">
+            <div class="tiny">Task comments</div>
+            ${commentsHtml}
+            <form class="comment-form">
+              <select class="comment-author">
+                ${members.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join("")}
+              </select>
+              <textarea class="comment-input" placeholder="Add an update, note, or follow-up"></textarea>
+              <button class="secondary add-comment" type="submit">Add comment</button>
+            </form>
+          </div>
+        </article>
+      `;
+        }
+
+        function renderBoard() {
+            const filtered = getFilteredTasks();
+
+            el.board.innerHTML = statuses.map(column => {
+                const items = filtered.filter(task => task.status === column.key);
+                return `
+          <section class="column">
+            <div class="column-header">
+              <h2>${column.label}</h2>
+              <span class="badge">${items.length}</span>
+            </div>
+            ${items.length ? items.map(renderTaskCard).join("") : '<div class="empty">No tasks here yet.</div>'}
+          </section>
+        `;
+            }).join("");
+
+            bindTaskCardEvents();
+        }
+
+        async function addTaskToFirestore(payload) {
+            await addDoc(collection(db, "tasks"), {
+                ...payload,
+                comments: [],
+                createdAt: serverTimestamp()
+            });
+        }
+
+        async function updateTaskInFirestore(id, payload) {
+            await updateDoc(doc(db, "tasks", id), payload);
+        }
+
+        async function deleteTaskFromFirestore(id) {
+            await deleteDoc(doc(db, "tasks", id));
+        }
+
+        async function addCommentToFirestore(task, author, text) {
+            const updatedComments = [
+                ...(Array.isArray(task.comments) ? task.comments : []),
+                { author, text, createdAt: Date.now() }
+            ];
+            await updateDoc(doc(db, "tasks", task.id), { comments: updatedComments });
+        }
+
+        async function setMembersInFirestore(updatedMembers) {
+            await setDoc(doc(db, "settings", "members"), { members: updatedMembers });
+        }
+
+        function bindTaskCardEvents() {
+            document.querySelectorAll(".edit-task").forEach(btn => {
+                btn.addEventListener("click", event => {
+                    const id = event.target.closest(".task-card")?.dataset.id;
+                    const task = tasks.find(t => t.id === id);
+                    if (!task) return;
+                    el.taskId.value = task.id;
+                    el.title.value = task.title;
+                    el.description.value = task.description;
+                    el.assignedTo.value = task.assignedTo;
+                    el.priority.value = task.priority;
+                    el.dueDate.value = task.dueDate || "";
+                    el.status.value = task.status;
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                });
+            });
+
+            document.querySelectorAll(".delete-task").forEach(btn => {
+                btn.addEventListener("click", async event => {
+                    const id = event.target.closest(".task-card")?.dataset.id;
+                    if (!id) return;
+                    if (!confirm("Delete this task?")) return;
+
+                    if (USE_FIREBASE) {
+                        await deleteTaskFromFirestore(id);
+                    } else {
+                        tasks = tasks.filter(task => task.id !== id);
+                        saveLocal();
+                        rerender();
+                    }
+                });
+            });
+
+            document.querySelectorAll(".status-select").forEach(select => {
+                select.addEventListener("change", async event => {
+                    const id = event.target.closest(".task-card")?.dataset.id;
+                    const task = tasks.find(t => t.id === id);
+                    if (!task) return;
+
+                    if (USE_FIREBASE) {
+                        await updateTaskInFirestore(id, { status: event.target.value });
+                    } else {
+                        task.status = event.target.value;
+                        saveLocal();
+                        rerender();
+                    }
+                });
+            });
+
+            document.querySelectorAll(".comment-form").forEach(form => {
+                form.addEventListener("submit", async event => {
+                    event.preventDefault();
+                    const taskCard = event.target.closest(".task-card");
+                    const id = taskCard?.dataset.id;
+                    const task = tasks.find(t => t.id === id);
+                    if (!task) return;
+
+                    const author = event.target.querySelector(".comment-author")?.value || "Unknown";
+                    const input = event.target.querySelector(".comment-input");
+                    const text = input?.value.trim();
+                    if (!text) return;
+
+                    if (USE_FIREBASE) {
+                        await addCommentToFirestore(task, author, text);
+                    } else {
+                        task.comments.push({ author, text, createdAt: Date.now() });
+                        saveLocal();
+                        rerender();
+                    }
+                });
+            });
+        }
+
+        function resetForm() {
+            el.taskId.value = "";
+            el.taskForm.reset();
+            el.priority.value = "medium";
+            el.status.value = "todo";
+            if (members[0]) el.assignedTo.value = members[0];
+        }
+
+        function rerender() {
+            renderMemberOptions();
+            renderStats();
+            renderBoard();
+        }
+
+        async function addMember(name) {
+            const trimmed = name.trim();
+            if (!trimmed) return;
+            if (members.includes(trimmed)) return;
+
+            if (USE_FIREBASE) {
+                await setMembersInFirestore([...members, trimmed]);
+            } else {
+                members.push(trimmed);
+                saveLocal();
+                rerender();
+            }
+
+            el.newMemberName.value = "";
+        }
+
+        function attachEventListeners() {
+            el.taskForm.addEventListener("submit", async event => {
+                event.preventDefault();
+
+                const payload = {
+                    title: el.title.value.trim(),
+                    description: el.description.value.trim(),
+                    assignedTo: el.assignedTo.value,
+                    priority: el.priority.value,
+                    dueDate: el.dueDate.value,
+                    status: el.status.value
+                };
+
+                if (!payload.title) return;
+
+                if (USE_FIREBASE) {
+                    if (el.taskId.value) {
+                        await updateTaskInFirestore(el.taskId.value, payload);
+                    } else {
+                        await addTaskToFirestore(payload);
+                    }
+                } else {
+                    if (el.taskId.value) {
+                        tasks = tasks.map(task => task.id === el.taskId.value ? { ...task, ...payload, comments: Array.isArray(task.comments) ? task.comments : [] } : task);
+                    } else {
+                        tasks.push({
+                            id: crypto.randomUUID(),
+                            ...payload,
+                            comments: [],
+                            createdAt: Date.now()
+                        });
+                    }
+                    saveLocal();
+                    rerender();
+                }
+
+                resetForm();
+            });
+
+            el.resetBtn.addEventListener("click", resetForm);
+            el.addMemberBtn.addEventListener("click", () => addMember(el.newMemberName.value));
+
+            el.newMemberName.addEventListener("keydown", event => {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    addMember(el.newMemberName.value);
+                }
+            });
+
+            [el.searchInput, el.filterAssignee, el.filterPriority].forEach(input => {
+                input.addEventListener("input", renderBoard);
+                input.addEventListener("change", renderBoard);
+            });
+        }
+
+        async function ensureInitialFirestoreData() {
+            const membersRef = doc(db, "settings", "members");
+            const membersSnap = await getDoc(membersRef);
+
+            if (!membersSnap.exists()) {
+                await setDoc(membersRef, { members: DEFAULT_MEMBERS });
+            }
+        }
+
+        async function initFirebase() {
+            const app = initializeApp(FIREBASE_CONFIG);
+            db = getFirestore(app);
+
+            await ensureInitialFirestoreData();
+
+            onSnapshot(doc(db, "settings", "members"), snapshot => {
+                const data = snapshot.data();
+                members = Array.isArray(data?.members) && data.members.length ? data.members : DEFAULT_MEMBERS;
+                rerender();
+            });
+
+            onSnapshot(query(collection(db, "tasks"), orderBy("createdAt")), snapshot => {
+                tasks = snapshot.docs.map(item => {
+                    const data = item.data();
+                    return {
+                        id: item.id,
+                        ...data,
+                        comments: Array.isArray(data.comments) ? data.comments : [],
+                        createdAt: data.createdAt?.seconds ? data.createdAt.seconds * 1000 : Date.now()
+                    };
+                });
+                rerender();
+            });
+        }
+
+        async function init() {
+            attachEventListeners();
+
+            if (USE_FIREBASE) {
+                try {
+                    await initFirebase();
+                } catch (error) {
+                    console.error(error);
+                    alert("Firebase could not connect. Check your Firestore rules, internet connection, and browser console.");
+                    loadLocal();
+                    rerender();
+                }
+            } else {
+                loadLocal();
+                rerender();
+            }
+
+            resetForm();
+        }
+
+        init();
+    </script>
+</body>
+
+</html>
