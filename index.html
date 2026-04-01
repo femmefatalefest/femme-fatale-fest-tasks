@@ -970,11 +970,9 @@
 
         async function ensureInitialFirestoreData() {
             const membersRef = doc(db, "settings", "members");
-            const membersSnap = await getDoc(membersRef);
-
-            if (!membersSnap.exists()) {
-                await setDoc(membersRef, { members: DEFAULT_MEMBERS });
-            }
+            await setDoc(membersRef, {
+                members: ["Alexis", "Calvin", "Ray", "Lee", "Kira"]
+            });
         }
 
         async function initFirebase() {
